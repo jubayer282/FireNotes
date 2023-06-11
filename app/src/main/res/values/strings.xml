@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">FirebaseNotes</string>
+    <string name="close">Colse</string>
+    <string name="open">Open</string>
+</resources>

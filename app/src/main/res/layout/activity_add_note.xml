@@ -16,34 +16,42 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            />
+            android:background="?attr/colorPrimary">
+
+            <EditText
+                android:id="@+id/addNoteTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@android:color/transparent"
+                android:ems="10"
+                android:hint="Note Title"
+                android:inputType="textPersonName"
+                android:minHeight="48dp"
+                android:textColor="#FFFDFD"
+                android:textColorHint="#FFFFFF"
+                android:textStyle="bold" />
+
+        </androidx.appcompat.widget.Toolbar>
+
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include
-        android:id="@+id/include"
-        layout="@layout/content_add_note"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+    <include layout="@layout/content_add_note" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:layout_margin="16dp"
-        android:src="@drawable/baseline_message_24"
+        android:src="@drawable/baseline_save_24"
+        app:backgroundTint="@color/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.98"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976"
+        app:maxImageSize="30dp"
         tools:ignore="MissingConstraints,SpeakableTextPresentCheck" />
 
 

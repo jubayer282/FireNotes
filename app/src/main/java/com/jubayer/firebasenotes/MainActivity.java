@@ -8,6 +8,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -63,16 +64,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
-            //case R.id.addNote:
-               // startActivity(new Intent(this,AddNote.class));
-                //break;
 
-            default:
-                Toast.makeText(this, "Coming soon...!!!", Toast.LENGTH_SHORT).show();
+        int itemId = item.getItemId();
+
+        if(itemId == R.id.addNote)
+        {
+            startActivity(new Intent(MainActivity.this, AddNote.class));
+            return true;
         }
+
         return false;
     }
 

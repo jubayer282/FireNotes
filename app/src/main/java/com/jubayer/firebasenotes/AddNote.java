@@ -5,11 +5,15 @@ import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class AddNote extends AppCompatActivity {
+
+    FirebaseFirestore fStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,6 +21,9 @@ public class AddNote extends AppCompatActivity {
         setContentView(R.layout.activity_add_note);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+
+        fStore = FirebaseFirestore.getInstance();
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
@@ -24,12 +31,9 @@ public class AddNote extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Action", null).show();
+                Toast.makeText(AddNote.this, "Note Save Successful", Toast.LENGTH_SHORT).show();
             }
         });
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 }

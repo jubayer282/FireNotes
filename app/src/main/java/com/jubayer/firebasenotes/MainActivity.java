@@ -14,9 +14,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavigationView nav_view;
     RecyclerView noteLists;
     Adapter adapter;
+    FirebaseFirestore fStore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +40,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        noteLists = findViewById(R.id.notelist);
 
+        fStore = FirebaseFirestore.getInstance();
+
+        Query query = fStore.collection("notes").orderBy("title", Query.Direction.DESCENDING);
+
+        //FirestoreRecyclerOption
+
+        noteLists = findViewById(R.id.notelist);
         drawerLayout = findViewById(R.id.drawer);
         nav_view = findViewById(R.id.nav_view);
         nav_view.setNavigationItemSelectedListener(this);
@@ -61,6 +72,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         adapter = new Adapter(titles,content);
         noteLists.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
         noteLists.setAdapter(adapter);
+
+        FloatingActionButton fab = findViewById(R.id.addNoteFloat);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(view.getContext(),AddNote.class));
+            }
+        });
 
     }
 

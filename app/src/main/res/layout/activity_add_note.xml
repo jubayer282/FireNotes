@@ -52,7 +52,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.976"
         app:maxImageSize="30dp"
-        tools:ignore="MissingConstraints,SpeakableTextPresentCheck" />
+        />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

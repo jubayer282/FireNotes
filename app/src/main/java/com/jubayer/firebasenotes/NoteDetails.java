@@ -15,7 +15,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 
 public class NoteDetails extends AppCompatActivity {
-
+    Intent data;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +25,7 @@ public class NoteDetails extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Intent data = getIntent();
+        data = getIntent();
 
         TextView content = findViewById(R.id.noteDetailsContent);
         TextView title = findViewById(R.id.noteDetailsTitle);
@@ -39,9 +39,11 @@ public class NoteDetails extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAnchorView(R.id.fab)
-                        .setAction("Action", null).show();
+               Intent intent = new Intent(view.getContext(),EditNote.class);
+               intent.putExtra("title",data.getStringExtra("title"));
+               intent.putExtra("content",data.getStringExtra("content"));
+               intent.putExtra("noteID",data.getStringExtra("noteID"));
+               startActivity(intent);
             }
         });
     }

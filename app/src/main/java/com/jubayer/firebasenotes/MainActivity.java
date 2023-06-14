@@ -12,20 +12,26 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -59,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .build();
 
         noteAdapter = new FirestoreRecyclerAdapter<Note, NoteViewHolder>(allNotes) {
+            @SuppressLint("RecyclerView")
             @Override
             protected void onBindViewHolder(@NonNull NoteViewHolder noteViewHolder, int intent, @NonNull Note note) {
 
@@ -79,6 +86,52 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         view.getContext().startActivity(intent);
                     }
                 });
+
+                ImageView menuIcon = noteViewHolder.view.findViewById(R.id.menuIcon);
+                menuIcon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final String docID = noteAdapter.getSnapshots().getSnapshot(intent).getId();
+                        PopupMenu menu = new PopupMenu(view.getContext(),view);
+                        menu.setGravity(Gravity.END);
+                        menu.getMenu().add("Edit").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
+                                Intent intent = new Intent(view.getContext(),EditNote.class);
+                                intent.putExtra("title",note.getTitle());
+                                intent.putExtra("content",note.getContent());
+                                intent.putExtra("noteID",docID);
+                                startActivity(intent);
+                                return false;
+                            }
+                        });
+
+                        menu.getMenu().add("Delete").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+                            @Override
+                            public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
+                                DocumentReference docRef = fStore.collection("notes").document(docID);
+                                docRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+
+                                        //note deleted
+                                        Toast.makeText(MainActivity.this, "Note Delete Successful.", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Toast.makeText(MainActivity.this, "Error in Deleting Note.", Toast.LENGTH_SHORT).show();
+
+                                    }
+                                });
+                                return false;
+                            }
+                        });
+
+                        menu.show();
+                    }
+                });
+
             }
 
             @NonNull

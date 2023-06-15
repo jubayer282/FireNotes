@@ -190,9 +190,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (itemId == R.id.sync)
         {
-            startActivity(new Intent(this, Register.class));
+            startActivity(new Intent(MainActivity.this, Register.class));
         }
-
 
         if (itemId == R.id.logout)
         {

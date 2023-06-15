@@ -28,8 +28,9 @@ public class Register extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
-        getSupportActionBar().setTitle("Create a New Account.");
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+      //   getSupportActionBar().setTitle("Create a New Account.");
+        // getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         rUserName = findViewById(R.id.userName);
         rUserEmail = findViewById(R.id.userEmail);
@@ -51,26 +52,23 @@ public class Register extends AppCompatActivity {
                 String uUserConPass = rUserConfPass.getText().toString();
 
                 if (uUserEmail.isEmpty() || uUserName.isEmpty() || uUserPass.isEmpty() || uUserConPass.isEmpty()){
-                    Toast.makeText(Register.this, "All Feilds Are Required.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
 
-                if (!uUserPass.equals(uUserConPass)){
+                    Toast.makeText(Register.this, "All Fields Are Required.", Toast.LENGTH_SHORT).show();
+                }
+               else if (!uUserPass.equals(uUserConPass)){
                     rUserConfPass.setError("Password Do not Match");
+                    progressBar.setVisibility(View.VISIBLE);
                 }
-
-                Toast.makeText(Register.this, "Condition is Passed.", Toast.LENGTH_SHORT).show();
+                else
+                {
+                    progressBar.setVisibility(View.INVISIBLE);
+                    Toast.makeText(Register.this, "Account is opened.", Toast.LENGTH_SHORT).show();
+                    // when write register code then remove this start_activity line...
+                    startActivity(new Intent(Register.this, MainActivity.class));
+                }
 
             }
         });
 
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        startActivity(new Intent(this, MainActivity.class));
-
-        finish();
-        return super.onOptionsItemSelected(item);
     }
 }

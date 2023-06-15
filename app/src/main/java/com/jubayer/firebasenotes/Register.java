@@ -14,7 +14,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.UserProfileChangeRequest;
 
 public class Register extends AppCompatActivity {
     EditText rUserName,rUserEmail,rUserPass,rUserConfPass;
@@ -29,8 +36,9 @@ public class Register extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-      //   getSupportActionBar().setTitle("Create a New Account.");
-        // getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+         //getSupportActionBar().setTitle("Create a New Account.");
+         //getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         rUserName = findViewById(R.id.userName);
         rUserEmail = findViewById(R.id.userEmail);
@@ -39,9 +47,15 @@ public class Register extends AppCompatActivity {
 
         syncAccount = findViewById(R.id.createAccount);
         loginAct = findViewById(R.id.login);
-        progressBar = findViewById(R.id.progressBar4);
+        progressBar = findViewById(R.id.progressBar3);
 
         fAuth = FirebaseAuth.getInstance();
+        loginAct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startActivity(new Intent(getApplicationContext(),Login.class));
+            }
+        });
 
         syncAccount.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,21 +68,45 @@ public class Register extends AppCompatActivity {
                 if (uUserEmail.isEmpty() || uUserName.isEmpty() || uUserPass.isEmpty() || uUserConPass.isEmpty()){
 
                     Toast.makeText(Register.this, "All Fields Are Required.", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-               else if (!uUserPass.equals(uUserConPass)){
+                if (!uUserPass.equals(uUserConPass)){
                     rUserConfPass.setError("Password Do not Match");
                     progressBar.setVisibility(View.VISIBLE);
                 }
-                else
-                {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    Toast.makeText(Register.this, "Account is opened.", Toast.LENGTH_SHORT).show();
-                    // when write register code then remove this start_activity line...
-                    startActivity(new Intent(Register.this, MainActivity.class));
-                }
+
+
+                AuthCredential credential = EmailAuthProvider.getCredential(uUserEmail,uUserPass);
+                fAuth.getCurrentUser().linkWithCredential(credential).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                    @Override
+                    public void onSuccess(AuthResult authResult) {
+                        Toast.makeText(Register.this, "Notes are synced.", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                        FirebaseUser usr = fAuth.getCurrentUser();
+                        UserProfileChangeRequest request = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(uUserName)
+                                .build();
+                        usr.updateProfile(request);
+
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(Register.this, "Failed to connect. Try again.", Toast.LENGTH_SHORT).show();
+                    }
+                });
 
             }
         });
 
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        startActivity(new Intent(this, MainActivity.class));
+        finish();
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -5,6 +5,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.graphics.RegionKt;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
@@ -119,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         menu.getMenu().add("Delete").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
-                                DocumentReference docRef = fStore.collection("notes").document(docID);
+                                DocumentReference docRef = fStore.collection("notes").document(user.getUid()).collection("myNotes").document(docID);
                                 docRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
@@ -162,14 +163,30 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.setDrawerIndicatorEnabled(true);
         toggle.syncState();
+
         noteLists.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
         noteLists.setAdapter(noteAdapter);
+
+        View headerView = nav_view.getHeaderView(0);
+        TextView username = headerView.findViewById(R.id.userDisplayName);
+        TextView userEmail = headerView.findViewById(R.id.userDisplayEmail);
+
+        if (user.isAnonymous()){
+            userEmail.setVisibility(View.GONE);
+            username.setText("Temporary User");
+        }else {
+            userEmail.setText(user.getEmail());
+            username.setText(user.getDisplayName());
+        }
+
+
 
         FloatingActionButton fab = findViewById(R.id.addNoteFloat);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(view.getContext(),AddNote.class));
+                overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
             }
         });
 
@@ -184,13 +201,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if(itemId == R.id.addNote)
         {
-            startActivity(new Intent(MainActivity.this, AddNote.class));
+            startActivity(new Intent(this, AddNote.class));
+            overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
             return true;
         }
 
         if (itemId == R.id.sync)
         {
-            startActivity(new Intent(MainActivity.this, Register.class));
+            if (user.isAnonymous()){
+                startActivity(new Intent(this, Login.class));
+                overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
+            }else {
+                Toast.makeText(this, "You are connected.", Toast.LENGTH_SHORT).show();
+            }
         }
 
         if (itemId == R.id.logout)
@@ -210,7 +233,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }else {
             FirebaseAuth.getInstance().signOut();
             startActivity(new Intent(getApplicationContext(),Splash.class));
-            finish();
+            overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
         }
     }
 
@@ -222,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         startActivity(new Intent(getApplicationContext(), Register.class));
-                        finish();
+
                     }
                 }).setNegativeButton("Logout", new DialogInterface.OnClickListener() {
                     @Override
@@ -234,7 +257,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             @Override
                             public void onSuccess(Void aVoid) {
                                   startActivity(new Intent(getApplicationContext(),Splash.class));
-                                  finish();
+                                  overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
                             }
                         });
 

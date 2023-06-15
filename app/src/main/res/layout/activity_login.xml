@@ -71,7 +71,7 @@
         app:layout_constraintVertical_bias="0.058"/>
 
     <TextView
-        android:id="@+id/creatAccount"
+        android:id="@+id/createAccount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
@@ -94,6 +94,6 @@
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/creatAccount"/>
+        app:layout_constraintTop_toBottomOf="@id/createAccount"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -5,11 +5,14 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
@@ -31,6 +34,8 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -48,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     Adapter adapter;
     FirebaseFirestore fStore;
     FirestoreRecyclerAdapter<Note,NoteViewHolder> noteAdapter;
+    FirebaseUser user;
+    FirebaseAuth fAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,8 +64,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setSupportActionBar(toolbar);
 
         fStore = FirebaseFirestore.getInstance();
+        fAuth = FirebaseAuth.getInstance();
+        user = fAuth.getCurrentUser();
 
-        Query query = fStore.collection("notes").orderBy("title", Query.Direction.DESCENDING);
+        Query query = fStore.collection("notes").document(user.getUid()).collection("myNotes").orderBy("title", Query.Direction.DESCENDING);
+        // qury notes > uuid > myNotes
 
         FirestoreRecyclerOptions<Note> allNotes = new FirestoreRecyclerOptions.Builder<Note>()
                 .setQuery(query,Note.class)
@@ -168,6 +178,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        drawerLayout.closeDrawer(GravityCompat.START);
 
         int itemId = item.getItemId();
 
@@ -177,7 +188,60 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return true;
         }
 
+        if (itemId == R.id.sync)
+        {
+            startActivity(new Intent(this, Register.class));
+        }
+
+
+        if (itemId == R.id.logout)
+        {
+            checkUser();
+            return true;
+        }
+
         return false;
+    }
+
+    private void checkUser() {
+
+        // if user is real is not
+        if (user.isAnonymous()){
+            displayAlert();
+        }else {
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(getApplicationContext(),Splash.class));
+            finish();
+        }
+    }
+
+    private void displayAlert() {
+        AlertDialog.Builder warning = new AlertDialog.Builder(this)
+                .setTitle("Are you sure?")
+                .setMessage("You are logged in with Temporary Account. Logging out will Delete All the notes.!")
+                .setPositiveButton("Sync Note", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivity(new Intent(getApplicationContext(), Register.class));
+                        finish();
+                    }
+                }).setNegativeButton("Logout", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // TODO: delete all the notes created by the anon user
+
+                        // TODO: delete the anon user
+                        user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                  startActivity(new Intent(getApplicationContext(),Splash.class));
+                                  finish();
+                            }
+                        });
+
+                    }
+                });
+        warning.show();
     }
 
     @Override

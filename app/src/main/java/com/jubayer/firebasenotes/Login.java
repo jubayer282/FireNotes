@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -30,16 +31,22 @@ public class Login extends AppCompatActivity {
     FirebaseFirestore fStore;
     FirebaseUser user;
     ProgressBar spinner;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Login to FireNotes");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         //getSupportActionBar().setDisplayShowHomeEnabled(true);
         //getSupportActionBar().setTitle("Login to FireNotes");
 
         IEmail = findViewById(R.id.email);
         IPassword = findViewById(R.id.password);
+
 
         spinner = findViewById(R.id.progressBar4);
 
@@ -128,10 +135,10 @@ public class Login extends AppCompatActivity {
                 });
         warning.show();
     }
-   /* @Override
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         startActivity(new Intent(this, MainActivity.class));
         finish();
         return super.onOptionsItemSelected(item);
-    }*/
+    }
 }

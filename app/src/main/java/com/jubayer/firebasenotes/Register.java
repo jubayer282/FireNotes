@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -29,12 +30,17 @@ public class Register extends AppCompatActivity {
     TextView loginAct;
     ProgressBar progressBar;
     FirebaseAuth fAuth;
+    Toolbar toolbar;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
+        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setTitle("Create a New Account");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 
          //getSupportActionBar().setTitle("Create a New Account.");

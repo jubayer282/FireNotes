@@ -24,7 +24,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Login extends AppCompatActivity {
-    EditText IEmail,IPassword;
+    EditText IEmail, IPassword;
     Button loginNow;
     TextView forgetPass,createAcc;
     FirebaseAuth fAuth;
@@ -37,20 +37,11 @@ public class Login extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        androidx.appcompat.widget.Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("Login to FireNotes");
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        //getSupportActionBar().setDisplayShowHomeEnabled(true);
-        //getSupportActionBar().setTitle("Login to FireNotes");
 
         IEmail = findViewById(R.id.email);
         IPassword = findViewById(R.id.password);
-
-
         spinner = findViewById(R.id.progressBar4);
 
-        forgetPass = findViewById(R.id.forgotPassword);
         createAcc = findViewById(R.id.createAccount);
         user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -67,7 +58,7 @@ public class Login extends AppCompatActivity {
                 String mPassword = IPassword.getText().toString();
 
                 if (mEmail.isEmpty() || mPassword.isEmpty()){
-                    Toast.makeText(Login.this, "Fields Are Required.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Login.this, "Fields are required.", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -78,7 +69,7 @@ public class Login extends AppCompatActivity {
                     fStore.collection("notes").document(user.getUid()).delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void Avoid) {
-                            Toast.makeText(Login.this, "All Team Notes are Deleted.", Toast.LENGTH_SHORT).show();
+                           //  Toast.makeText(Login.this, "All Team Notes are Deleted.", Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -86,7 +77,7 @@ public class Login extends AppCompatActivity {
                     user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {
-                            Toast.makeText(Login.this, "Team user Deleted.", Toast.LENGTH_SHORT).show();
+                            // Toast.makeText(Login.this, "Team user Deleted.", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -94,14 +85,14 @@ public class Login extends AppCompatActivity {
                 fAuth.signInWithEmailAndPassword(mEmail,mPassword).addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(AuthResult authResult) {
-                        Toast.makeText(Login.this, "Success  !", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "Login Successful  !", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(getApplicationContext(), MainActivity.class));
                         finish();
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(Login.this, "Login Failed. " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "Something wrong with you " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         spinner.setVisibility(View.GONE);
                     }
                 });

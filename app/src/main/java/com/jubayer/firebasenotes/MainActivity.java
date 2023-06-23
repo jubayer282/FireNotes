@@ -28,11 +28,11 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ActionBarDrawerToggle toggle;
     NavigationView nav_view;
     RecyclerView noteLists;
+
     Adapter adapter;
     FirebaseFirestore fStore;
     FirestoreRecyclerAdapter<Note,NoteViewHolder> noteAdapter;
@@ -61,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -68,8 +70,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fAuth = FirebaseAuth.getInstance();
         user = fAuth.getCurrentUser();
 
+        /*query start to show all notes*/
         Query query = fStore.collection("notes").document(user.getUid()).collection("myNotes").orderBy("title", Query.Direction.DESCENDING);
-        // qury notes > uuid > myNotes
 
         FirestoreRecyclerOptions<Note> allNotes = new FirestoreRecyclerOptions.Builder<Note>()
                 .setQuery(query,Note.class)
@@ -82,14 +84,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 noteViewHolder.noteTitle.setText(note.getTitle());
                 noteViewHolder.noteContent.setText(note.getContent());
-                final int code = getRandomColor();
+                final int code = getTitleRandomColor();
                 noteViewHolder.mCardView.setCardBackgroundColor(noteViewHolder.view.getResources().getColor(code,null));
                 final String docID = noteAdapter.getSnapshots().getSnapshot(intent).getId();
 
                 noteViewHolder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(view.getContext(), NoteDetails.class);
+                        Intent intent = new Intent(view.getContext(), EditNote.class); // you can change this to NoteDetails Activity......
                         intent.putExtra("title",note.getTitle());
                         intent.putExtra("content",note.getContent());
                         intent.putExtra("code", code);
@@ -175,8 +177,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             userEmail.setVisibility(View.GONE);
             username.setText("Temporary User");
         }else {
-            userEmail.setText(user.getEmail());
-            username.setText(user.getDisplayName());
+            userEmail.setText("Username: "+ user.getEmail());
+            username.setText("E-mail: "+ user.getDisplayName());
         }
 
 
@@ -202,7 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if(itemId == R.id.addNote)
         {
             startActivity(new Intent(this, AddNote.class));
-            overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
+            // overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
             return true;
         }
 
@@ -276,13 +278,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.settings){
-            Toast.makeText(this, "Settings Menu is Clicked.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Incoming Settings", Toast.LENGTH_SHORT).show();
+        }
+        else if (item.getItemId() == R.id.addNotes)
+        {
+            startActivity(new Intent(this, AddNote.class));
         }
         return super.onOptionsItemSelected(item);
     }
 
     public static class NoteViewHolder extends RecyclerView.ViewHolder{
-        TextView noteTitle,noteContent;
+        TextView noteTitle, noteContent;
         View view;
         CardView mCardView;
         public NoteViewHolder(@NonNull View itemView) {
@@ -305,6 +311,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         colorCode.add(R.color.red);
         colorCode.add(R.color.greenlight);
         colorCode.add(R.color.notgreen);
+
+        Random random = new Random();
+        int number = random.nextInt(colorCode.size());
+        return colorCode.get(number);
+    }
+
+    private int getTitleRandomColor(){
+        List<Integer> colorCode = new ArrayList<>();
+
+        colorCode.add(R.color.pink);
+        colorCode.add(R.color.skyblue);
+        colorCode.add(R.color.lightGreen);
+        colorCode.add(R.color.gray);
+        colorCode.add(R.color.greenlight);
 
         Random random = new Random();
         int number = random.nextInt(colorCode.size());

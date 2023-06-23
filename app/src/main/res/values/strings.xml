@@ -1,8 +1,8 @@
 <resources>
-    <string name="app_name">FirebaseNotes</string>
-    <string name="close">Colse</string>
+    <string name="app_name">Fire Notes</string>
+    <string name="close">Close</string>
     <string name="open">Open</string>
-    <string name="title_activity_add_note">AddNote</string>
+    <string name="title_activity_add_note">Add Note</string>
     <!--    &lt;!&ndash; Strings used for fragments for navigation &ndash;&gt;
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>-->

@@ -110,14 +110,14 @@ public class Login extends AppCompatActivity {
     private void showWarning() {
         AlertDialog.Builder warning = new AlertDialog.Builder(this)
                 .setTitle("Are you sure?")
-                .setMessage("Linking Existing Account will delete all the team notes. Create New Acoount to Save them.")
+                .setMessage("Linking Existing Account will delete all the notes. Create New Account to Save them.")
                 .setPositiveButton("Save Note", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         startActivity(new Intent(getApplicationContext(), Register.class));
                         finish();
                     }
-                }).setNegativeButton("Its Ok", new DialogInterface.OnClickListener() {
+                }).setNegativeButton("It's ok", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
 

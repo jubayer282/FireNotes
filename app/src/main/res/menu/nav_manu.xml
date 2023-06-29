@@ -10,13 +10,15 @@
             <item
                 android:id="@+id/addNote"
                 android:icon="@drawable/baseline_add_24"
-                android:title="Add Note" />
+                android:title="Create Note" />
             <item
                 android:id="@+id/sync"
                 android:icon="@drawable/baseline_sync_24"
-                android:title="Sync Notes" />
+                android:title="Sync all notes" />
         </menu>
     </item>
+
+    <!--design part -2-->
     <item android:title="Support">
         <menu>
             <item
@@ -27,7 +29,7 @@
             <item
                 android:id="@+id/shareapp"
                 android:icon="@drawable/baseline_share_24"
-                android:title="shareapp" />
+                android:title="Share App" />
         </menu>
 
     </item>

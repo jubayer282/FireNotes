@@ -13,8 +13,10 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -28,11 +30,11 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -51,9 +53,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ActionBarDrawerToggle toggle;
     NavigationView nav_view;
     RecyclerView noteLists;
+
     Adapter adapter;
     FirebaseFirestore fStore;
-    FirestoreRecyclerAdapter<Note,NoteViewHolder> noteAdapter;
+    FirestoreRecyclerAdapter<Note, NoteViewHolder> noteAdapter;
     FirebaseUser user;
     FirebaseAuth fAuth;
 
@@ -61,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -68,11 +72,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fAuth = FirebaseAuth.getInstance();
         user = fAuth.getCurrentUser();
 
+        /*query start to show all notes*/
         Query query = fStore.collection("notes").document(user.getUid()).collection("myNotes").orderBy("title", Query.Direction.DESCENDING);
-        // qury notes > uuid > myNotes
 
         FirestoreRecyclerOptions<Note> allNotes = new FirestoreRecyclerOptions.Builder<Note>()
-                .setQuery(query,Note.class)
+                .setQuery(query, Note.class)
                 .build();
 
         noteAdapter = new FirestoreRecyclerAdapter<Note, NoteViewHolder>(allNotes) {
@@ -82,18 +86,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 noteViewHolder.noteTitle.setText(note.getTitle());
                 noteViewHolder.noteContent.setText(note.getContent());
-                final int code = getRandomColor();
-                noteViewHolder.mCardView.setCardBackgroundColor(noteViewHolder.view.getResources().getColor(code,null));
+                final int code = getTitleRandomColor();
+                noteViewHolder.mCardView.setCardBackgroundColor(noteViewHolder.view.getResources().getColor(code, null));
                 final String docID = noteAdapter.getSnapshots().getSnapshot(intent).getId();
 
                 noteViewHolder.view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Intent intent = new Intent(view.getContext(), NoteDetails.class);
-                        intent.putExtra("title",note.getTitle());
-                        intent.putExtra("content",note.getContent());
+                        Intent intent = new Intent(view.getContext(), EditNote.class); // you can change this to NoteDetails Activity......
+                        intent.putExtra("title", note.getTitle());
+                        intent.putExtra("content", note.getContent());
                         intent.putExtra("code", code);
-                        intent.putExtra("noteID",docID);
+                        intent.putExtra("noteID", docID);
                         view.getContext().startActivity(intent);
                     }
                 });
@@ -103,15 +107,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onClick(View view) {
                         final String docID = noteAdapter.getSnapshots().getSnapshot(intent).getId();
-                        PopupMenu menu = new PopupMenu(view.getContext(),view);
+                        PopupMenu menu = new PopupMenu(view.getContext(), view);
                         menu.setGravity(Gravity.END);
                         menu.getMenu().add("Edit").setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(@NonNull MenuItem menuItem) {
-                                Intent intent = new Intent(view.getContext(),EditNote.class);
-                                intent.putExtra("title",note.getTitle());
-                                intent.putExtra("content",note.getContent());
-                                intent.putExtra("noteID",docID);
+                                Intent intent = new Intent(view.getContext(), EditNote.class);
+                                intent.putExtra("title", note.getTitle());
+                                intent.putExtra("content", note.getContent());
+                                intent.putExtra("noteID", docID);
                                 startActivity(intent);
                                 return false;
                             }
@@ -159,34 +163,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nav_view = findViewById(R.id.nav_view);
         nav_view.setNavigationItemSelectedListener(this);
 
-        toggle = new ActionBarDrawerToggle(this,drawerLayout, toolbar, R.string.open, R.string.close);
+        toggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.open, R.string.close);
         drawerLayout.addDrawerListener(toggle);
         toggle.setDrawerIndicatorEnabled(true);
         toggle.syncState();
 
-        noteLists.setLayoutManager(new StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL));
+        noteLists.setLayoutManager(new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL));
         noteLists.setAdapter(noteAdapter);
 
         View headerView = nav_view.getHeaderView(0);
         TextView username = headerView.findViewById(R.id.userDisplayName);
         TextView userEmail = headerView.findViewById(R.id.userDisplayEmail);
 
-        if (user.isAnonymous()){
+        if (user.isAnonymous()) {
             userEmail.setVisibility(View.GONE);
             username.setText("Temporary User");
-        }else {
-            userEmail.setText(user.getEmail());
-            username.setText(user.getDisplayName());
+        } else {
+            userEmail.setText("Username: " + user.getEmail());
+            username.setText("E-mail: " + user.getDisplayName());
         }
-
 
 
         FloatingActionButton fab = findViewById(R.id.addNoteFloat);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(view.getContext(),AddNote.class));
-                overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
+                startActivity(new Intent(view.getContext(), AddNote.class));
+                overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
             }
         });
 
@@ -199,25 +202,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         int itemId = item.getItemId();
 
-        if(itemId == R.id.addNote)
-        {
-            startActivity(new Intent(this, AddNote.class));
-            overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
+        if (itemId == R.id.addNote) {
+            startActivity(new Intent(MainActivity.this, AddNote.class));
+            // overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
             return true;
-        }
-
-        if (itemId == R.id.sync)
-        {
-            if (user.isAnonymous()){
-                startActivity(new Intent(this, Login.class));
-                overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
-            }else {
+        } else if (itemId == R.id.sync) {
+            if (user.isAnonymous()) {
+                startActivity(new Intent(MainActivity.this, Login.class));
+                overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
+            } else {
                 Toast.makeText(this, "You are connected.", Toast.LENGTH_SHORT).show();
             }
-        }
+        } else if (itemId == R.id.rating) {
+            Toast.makeText(this, "Rate our apps", Toast.LENGTH_SHORT).show();
+            try {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/dev?id=6580660399707616800")));
+            } catch (ActivityNotFoundException e) {
+                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/dev?id=6580660399707616800")));
+            }
 
-        if (itemId == R.id.logout)
-        {
+        } else if (itemId == R.id.shareapp) {
+            Toast.makeText(this, "Share our apps", Toast.LENGTH_SHORT).show();
+        } else if (itemId == R.id.logout) {
             checkUser();
             return true;
         }
@@ -228,12 +234,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private void checkUser() {
 
         // if user is real is not
-        if (user.isAnonymous()){
+        if (user.isAnonymous()) {
             displayAlert();
-        }else {
+        } else {
             FirebaseAuth.getInstance().signOut();
-            startActivity(new Intent(getApplicationContext(),Splash.class));
-            overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
+            startActivity(new Intent(getApplicationContext(), Splash.class));
+            overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
         }
     }
 
@@ -245,19 +251,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         startActivity(new Intent(getApplicationContext(), Register.class));
-
                     }
                 }).setNegativeButton("Logout", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        // TODO: delete all the notes created by the anon user
-
-                        // TODO: delete the anon user
                         user.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                  startActivity(new Intent(getApplicationContext(),Splash.class));
-                                  overridePendingTransition(R.anim.slide_up,R.anim.slide_down);
+                                startActivity(new Intent(getApplicationContext(), Splash.class));
+                                overridePendingTransition(R.anim.slide_up, R.anim.slide_down);
                             }
                         });
 
@@ -269,22 +271,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.option_menu,menu);
+        inflater.inflate(R.menu.option_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.settings){
-            Toast.makeText(this, "Settings Menu is Clicked.", Toast.LENGTH_SHORT).show();
+        if (item.getItemId() == R.id.settings) {
+            Toast.makeText(this, "Incoming Settings", Toast.LENGTH_SHORT).show();
+        } else if (item.getItemId() == R.id.addNotes) {
+            startActivity(new Intent(this, AddNote.class));
         }
         return super.onOptionsItemSelected(item);
     }
 
-    public static class NoteViewHolder extends RecyclerView.ViewHolder{
-        TextView noteTitle,noteContent;
+    public static class NoteViewHolder extends RecyclerView.ViewHolder {
+        TextView noteTitle, noteContent;
         View view;
         CardView mCardView;
+
         public NoteViewHolder(@NonNull View itemView) {
             super(itemView);
             noteTitle = itemView.findViewById(R.id.titles);
@@ -293,7 +298,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             view = itemView;
         }
     }
-    private int getRandomColor(){
+
+    private int getRandomColor() {
         List<Integer> colorCode = new ArrayList<>();
         colorCode.add(R.color.blue);
         colorCode.add(R.color.yellow);
@@ -305,6 +311,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         colorCode.add(R.color.red);
         colorCode.add(R.color.greenlight);
         colorCode.add(R.color.notgreen);
+
+        Random random = new Random();
+        int number = random.nextInt(colorCode.size());
+        return colorCode.get(number);
+    }
+
+    private int getTitleRandomColor() {
+        List<Integer> colorCode = new ArrayList<>();
+
+        colorCode.add(R.color.pink);
+        colorCode.add(R.color.skyblue);
+        colorCode.add(R.color.lightGreen);
+        colorCode.add(R.color.gray);
+        colorCode.add(R.color.greenlight);
 
         Random random = new Random();
         int number = random.nextInt(colorCode.size());

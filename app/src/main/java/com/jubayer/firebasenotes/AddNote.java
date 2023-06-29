@@ -27,7 +27,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AddNote extends AppCompatActivity {
-
     FirebaseFirestore fStore;
     EditText noteTitle,noteContent;
     ProgressBar progressBarSave;
@@ -40,6 +39,7 @@ public class AddNote extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         progressBarSave = findViewById(R.id.progressBar);
         user = FirebaseAuth.getInstance().getCurrentUser();

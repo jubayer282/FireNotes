@@ -33,33 +33,33 @@ public class Splash extends AppCompatActivity {
             @Override
             public void run() {
 
-               // check if user is logged
-               if (fAuth.getCurrentUser() != null){
-                   startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                   finish();
-               }else{
+                // check if user is logged
+                if (fAuth.getCurrentUser() != null) {
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    finish();
+                } else {
 
-                   // create new anonymous account
-                   fAuth.signInAnonymously().addOnSuccessListener(new OnSuccessListener<AuthResult>() {
-                       @Override
-                       public void onSuccess(AuthResult authResult) {
-                           Toast.makeText(Splash.this, "Logged in with Temporary Account.", Toast.LENGTH_SHORT).show();
-                           startActivity(new Intent(getApplicationContext(),MainActivity.class));
-                           finish();
+                    // create new anonymous account
+                    fAuth.signInAnonymously().addOnSuccessListener(new OnSuccessListener<AuthResult>() {
+                        @Override
+                        public void onSuccess(AuthResult authResult) {
+                            Toast.makeText(Splash.this, "Logged in with temporary account.", Toast.LENGTH_LONG).show();
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            finish();
 
-                       }
-                   }).addOnFailureListener(new OnFailureListener() {
-                       @Override
-                       public void onFailure(@NonNull Exception e) {
-                           Toast.makeText(Splash.this, "Error!" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(Splash.this, "Something wrong with you !!!!" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             progressBarSp.setVisibility(View.VISIBLE);
                             finish();
-                       }
-                   });
+                        }
+                    });
 
-               }
+                }
 
             }
-        },2000);
+        }, 2000);
     }
 }

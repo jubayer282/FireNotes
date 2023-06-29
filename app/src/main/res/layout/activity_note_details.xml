@@ -23,17 +23,16 @@
                 android:id="@+id/noteDetailsTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="TextView"
+                android:text="Note Title"
                 android:textColor="#FFFFFF"
                 android:textSize="18dp"
                 android:textStyle="bold" />
         </androidx.appcompat.widget.Toolbar>
 
 
-
     </com.google.android.material.appbar.AppBarLayout>
 
-<include layout="@layout/content_note_details"/>
+    <include layout="@layout/content_note_details" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
@@ -41,7 +40,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="18dp"
-
         android:backgroundTint="@color/colorPrimary"
         android:src="@drawable/baseline_edit_24"
         app:fabSize="auto"

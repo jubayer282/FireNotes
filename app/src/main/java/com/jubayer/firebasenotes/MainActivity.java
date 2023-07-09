@@ -179,8 +179,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             userEmail.setVisibility(View.GONE);
             username.setText("Temporary User");
         } else {
-            userEmail.setText("Username: " + user.getEmail());
-            username.setText("E-mail: " + user.getDisplayName());
+            userEmail.setText("E-mail: " + user.getEmail());
+            username.setText("Username: " + user.getDisplayName());
         }
 
 

@@ -31,6 +31,7 @@ public class Login extends AppCompatActivity {
     FirebaseFirestore fStore;
     FirebaseUser user;
     ProgressBar spinner;
+
     Toolbar toolbar;
 
     @Override
